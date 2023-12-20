@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pincode Project</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        height: 100vh;
+        margin: 0;
+        background-color: rgb(212 226 236);
+        color: rgb(0, 0, 0);
+        font-size: 23px;
+      }
+
+      #search-container {
+        text-align: center;
+        margin-top: 120px;
+        height: 15px;
+      }
+
+      #pincode {
+        height: 25px;
+        width: 230px;
+        border-radius: 5px;
+      }
+      button {
+        height: 31px;
+        width: 90px;
+        background-color: rgb(114, 214, 105);
+        color: white;
+        border-radius: 5px;
+      }
+      button:hover{
+        background-color: rgb(92, 240, 146);
+      }
+      #result-container {
+        margin-top: 90px;
+        text-align: center;
+      }
+        /* Media Query for Tablets */
+  @media only screen and (max-width: 768px) {
+    #search-container {
+      margin-top: 80px;
+    }
+
+    #pincode {
+      width: 100%;
+      max-width: 300px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      width: 200px;
+      max-width: 200px;
+    }
+
+    #result-container {
+      margin-top: 100px;
+      color: brown;
+    }
+  }
+
+  /* Media Query for Mobile Phones */
+  @media only screen and (max-width: 480px) {
+    #search-container {
+      margin-top: 60px;
+    }
+
+    #pincode,
+    button {
+      width: 200px;
+      margin-bottom: 10px;
+    }
+
+    #result-container {
+      margin-top: 150px;
+    }
+  }
+    </style>
+  </head>
+  <body>
+    <div id="search-container">
+      <label for="pincode" style="font-size: 18px; font-weight: bold;">Enter Pin Code & Check Details : </label><br><br>
+      <input type="text" id="pincode" placeholder="Enter pin code" />
+      <button onclick="searchPinCode()">Search</button>
+    </div>
+
+    <div id="result-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      async function searchPinCode() {
+        const pincodeInput = document.getElementById("pincode");
+        const resultContainer = document.getElementById("result-container");
+        resultContainer.innerHTML = "";
+
+        const pincode = pincodeInput.value.trim();
+
+        if (!pincode) {
+          alert("Please enter a pin code");
+          return;
+        }
+
+        const options = {
+          method: "GET",
+          url: `https://india-pincode-with-latitude-and-longitude.p.rapidapi.com/api/v1/pincode/${pincode}`,
+          headers: {
+            "X-RapidAPI-Key":
+              "718ff2db85mshaecbe273c602a72p1eb0d8jsn32e6f32ba211",
+            "X-RapidAPI-Host":
+              "india-pincode-with-latitude-and-longitude.p.rapidapi.com",
+          },
+        };
+
+        try {
+          const response = await axios.request(options);
+          const pincodeDataArray = response.data;
+
+          if (pincodeDataArray.length > 0) {
+            const firstResult = pincodeDataArray[0];
+            const resultHtml = `
+            <p>Pincode: ${firstResult.pincode}</p>
+            <p>Area: ${firstResult.area}</p>
+            <p>Latitude: ${firstResult.lat}</p>
+            <p>Longitude: ${firstResult.lng}</p>
+            <p>District: ${firstResult.district}</p>
+            <p>State: ${firstResult.state}</p>
+          `;
+            resultContainer.innerHTML = resultHtml;
+          } else {
+            resultContainer.innerHTML =
+              "<p>No results found for the given pin code.</p>";
+          }
+        } catch (error) {
+          console.error(error);
+          resultContainer.innerHTML =
+            "<p>Error fetching data. Please try again.</p>";
+        }
+      }
+    </script>
+  </body>
+</html>
